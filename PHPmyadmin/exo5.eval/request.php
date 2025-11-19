@@ -11,13 +11,8 @@ if (isset($_GET['order'])) {
     $order = $_GET['order'];
 }
 
-$sth = $dbh->prepare( query: 'INSERT INTO `100` (`nom`, `pays`, `course`, `temps`) VALUES (:nom, :pays, :course, :temps)');
-$sth->execute([
-'nom' => $_POST['nom'],
-'pays' => $_POST[ 'pays' ],
-'course' => $_POST['course'],
-'temps' => $_POST['temps']
-]);
+$sth = $dbh->prepare(query:'SELECT * FROM jo.`100` ORDER BY '.$sort.' '.$order );
+$sth->execute();
 
 $data = $sth->fetchAll(mode:PDO::FETCH_ASSOC);
 echo "<table>
