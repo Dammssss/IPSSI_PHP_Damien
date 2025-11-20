@@ -1,35 +1,45 @@
 <?php
-require_once("config.php");
-
-$sort = "nom";
-if (isset($_GET['sort'])) {
-    $sort = $_GET['sort'];
+session_start();
+ 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+    unset($_SESSION['username']);      
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
-
-$order = "desc";
-if (isset($_GET['order'])) {
-    $order = $_GET['order'];
+ 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['username'])) {
+    $_SESSION['username'] = $_POST['username'];
 }
-
-$sth = $dbh->prepare(query:'SELECT * FROM jo.`100` ORDER BY '.$sort.' '.$order );
-$sth->execute();
-
-$data = $sth->fetchAll(mode:PDO::FETCH_ASSOC);
-echo "<table>
-    <thead>
-        <tr>
-            <th>Nom <a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=nom&order=asc'>🔼</a><a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=nom&order=desc'>🔽</a></th>
-            <th>Pays <a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=pays&order=asc'>🔼</a><a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=pays&order=desc'>🔽</a></th>
-            <th>Course <a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=course&order=asc'>🔼</a><a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=course&order=desc'>🔽</a></th>
-            <th>Temps <a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=temps&order=asc'>🔼</a><a href='http://localhost/IPSSI_PHP_Damien/PHPmyadmin/exo6/request.php?sort=temps&order=desc'>🔽</a></th>
-        </tr>
-     </thead>";
-     foreach ($data as $value) {
-        echo "<tr>
-            <td>".$value["nom"]."</td>
-            <td>".$value["pays"]."</td>
-            <td>".$value["course"]."</td>
-            <td>".$value["temps"]."</td>
-            </tr>";
-     }
 ?>
+ 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Username</title>
+</head>
+<body>
+ 
+<?php
+if (!isset($_SESSION['username'])) {
+    ?>
+    <form method="post">
+        <label for="username">Username :</label>
+        <input type="text" name="username" id="username" required>
+        <button type="submit">Valider</button>
+    </form>
+    <?php
+}
+ 
+else {
+    echo "<p>Bonjour, <strong>" . htmlspecialchars($_SESSION['username']) . "</strong> !</p>";
+    ?>
+    <form method="post">
+        <button type="submit" name="logout" value="1">Logout</button>
+    </form>
+<?php
+}
+?>
+ 
+</body>
+</html>
